@@ -9,7 +9,7 @@ import javafx.geometry.*;
 import java.lang.Enum;
 
 public class SpaceJunk {
-	
+	public Point3D oldcom;
 	public Point3D com;
 	private double radius;
 	private double mass;
@@ -93,6 +93,69 @@ public class SpaceJunk {
 		return 1;
 		
 	}
+	
+	public void collide(SpaceJunk enemy) {
+		
+		double v1x = this.velocity.getX()*(this.mass-enemy.mass)+2*enemy.mass*enemy.velocity.getX()/(this.mass+enemy.mass);
+		double v1y = this.velocity.getY()*(this.mass-enemy.mass)+2*enemy.mass*enemy.velocity.getY()/(this.mass+enemy.mass);
+		double v1z = this.velocity.getZ()*(this.mass-enemy.mass)+2*enemy.mass*enemy.velocity.getZ()/(this.mass+enemy.mass);
+		
+		double v2x = enemy.velocity.getX()*(enemy.mass-this.mass)+2*this.mass*this.velocity.getX()/(enemy.mass+this.mass);
+		double v2y = enemy.velocity.getY()*(enemy.mass-this.mass)+2*this.mass*this.velocity.getY()/(enemy.mass+this.mass);
+		double v2z = enemy.velocity.getZ()*(enemy.mass-this.mass)+2*this.mass*this.velocity.getZ()/(enemy.mass+this.mass);
+		
+		this.velocity = new Point3D(v1x, v1y, v1z);
+		enemy.velocity = new Point3D(v2x, v2y, v2z);
+		
+		
+	}
+	
+	public double detect(SpaceJunk neighbor) {
+		
+				
+		  double tolerance = .00000001; // Our approximation of zero
+		  int max_count = 200; // Maximum number of Newton's method iterations
+
+	
+
+		  double x = 0.01;
+
+
+	         for( int count=1; (Math.abs(f(x, neighbor)) > tolerance) && ( count < max_count);count++)  {
+	        	 x= x-(f(x, neighbor)/fprime(x, neighbor));
+	        	 //System.out.println("Step: "+count+" x:"+x+" Value:"+f(x, neighbor));
+		  }            
+
+		  if( Math.abs(f(x, neighbor)) <= tolerance) {
+		   System.out.println("Zero found at x="+x);
+		   return x;
+		  }
+		  else {
+		   //System.out.println("Failed to find a zero");
+		  }
+		
+		
+		
+		return 0;
+		
+	}
+	
+	
+		public double f(double x, SpaceJunk neighbor) {
+		return Math.sqrt(Math.pow(this.oldcom.getX()-neighbor.oldcom.getX()+ x * (this.com.getX()- this.oldcom.getX() - neighbor.com.getX() + neighbor.oldcom.getX()), 2) + Math.pow(this.oldcom.getY()-neighbor.oldcom.getY()+ x * (this.com.getY()- this.oldcom.getY() - neighbor.com.getY() + neighbor.oldcom.getY()), 2)+Math.pow(this.oldcom.getZ()-neighbor.oldcom.getZ()+ x * (this.com.getZ()- this.oldcom.getZ() - neighbor.com.getZ() + neighbor.oldcom.getZ()), 2))-(this.radius+neighbor.radius);
+	    }
+
+	    public double fprime(double x, SpaceJunk neighbor) {
+	        return (2*(this.com.getX()-this.oldcom.getX()-neighbor.com.getX()+neighbor.oldcom.getX())*this.oldcom.getX()-neighbor.oldcom.getX()+ x * (this.com.getX()- this.oldcom.getX() - neighbor.com.getX() + neighbor.oldcom.getX()) + (2*(this.com.getY()- this.oldcom.getY() - neighbor.com.getY() + neighbor.oldcom.getY())*this.oldcom.getY()-neighbor.oldcom.getY()+ x * (this.com.getY()- this.oldcom.getY() - neighbor.com.getY() + neighbor.oldcom.getY()) + (2* (this.com.getZ()- this.oldcom.getZ() - neighbor.com.getZ() + neighbor.oldcom.getZ())*(this.oldcom.getZ()-neighbor.oldcom.getZ()+ x * (this.com.getZ()- this.oldcom.getZ() - neighbor.com.getZ() + neighbor.oldcom.getZ())))/(2*(Math.sqrt(Math.pow(this.oldcom.getX()-neighbor.oldcom.getX()+ x * (this.com.getX()- this.oldcom.getX() - neighbor.com.getX() + neighbor.oldcom.getX()), 2) + Math.pow(this.oldcom.getY()-neighbor.oldcom.getY()+ x * (this.com.getY()- this.oldcom.getY() - neighbor.com.getY() + neighbor.oldcom.getY()), 2)+Math.pow(this.oldcom.getZ()-neighbor.oldcom.getZ()+ x * (this.com.getZ()- this.oldcom.getZ() - neighbor.com.getZ() + neighbor.oldcom.getZ()), 2))))));
+
+	    }
+
+	   
+
+		  
+
+	
+	
 
 
 
